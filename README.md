@@ -37,16 +37,16 @@ To start the application, run the following command: npm run start
 
 You will be prompted with options to search for a city’s weather or select a city from your search history.
 
-When using the weather dashboard, the following prompt will appear:
-Enter City Name: Input the name of the city you want to retrieve weather data for.
+When using the weather dashboard, the 'following prompt will appear: 'Enter City Name'
+Input the name of the city you want to retrieve weather data for.
 
 Once a city is entered, the following information will be displayed:
 - City Name and Date: The name of the city and the current date.
 - Current Weather: Displays temperature, humidity, wind speed, and a weather condition icon.
 - 5-Day Forecast: Shows the weather forecast for the next 5 days, including the temperature, wind speed, humidity, and a weather condition icon.
   
-The following prompts will appear when selecting a city from the search history:
-View Current and Future Conditions: Reload the weather data for the selected city from the search history.
+When selecting a city from the search history, the following prompt will appear: 'View Current and Future Conditions'
+Reload the weather data for the selected city from the search history.
 
 Each time you search for a city, it will automatically be saved to the search history, allowing you to easily revisit past searches.
 
