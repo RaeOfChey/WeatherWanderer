@@ -34,21 +34,27 @@ API Calls
 
 */
 
+
 const fetchWeather = async (cityName: string) => {
+  console.log('doing the fetch')
   const response = await fetch('/api/weather/', {
     method: 'POST',
     headers: {
       'Content-Type': 'application/json',
     },
-    body: JSON.stringify({ cityName }),
+    body: JSON.stringify({ city: cityName }), // Change cityName to city
   });
 
   const weatherData = await response.json();
 
   console.log('weatherData: ', weatherData);
 
-  renderCurrentWeather(weatherData[0]);
-  renderForecast(weatherData.slice(1));
+  if (weatherData.success) {
+    renderCurrentWeather(weatherData[0]);
+    renderForecast(weatherData.slice(1));
+  } else {
+    console.error('Error fetching weather:', weatherData.message);
+  }
 };
 
 const fetchSearchHistory = async () => {
@@ -77,29 +83,38 @@ Render Functions
 */
 
 const renderCurrentWeather = (currentWeather: any): void => {
-  const { city, date, icon, iconDescription, tempF, windSpeed, humidity } =
-    currentWeather;
+  console.log("Current Weather Data:", currentWeather); // Log the entire object
 
-  // convert the following to typescript
-  heading.textContent = `${city} (${date})`;
-  weatherIcon.setAttribute(
-    'src',
-    `https://openweathermap.org/img/w/${icon}.png`
-  );
-  weatherIcon.setAttribute('alt', iconDescription);
-  weatherIcon.setAttribute('class', 'weather-img');
-  heading.append(weatherIcon);
-  tempEl.textContent = `Temp: ${tempF}°F`;
-  windEl.textContent = `Wind: ${windSpeed} MPH`;
-  humidityEl.textContent = `Humidity: ${humidity} %`;
+  if (currentWeather) {
+    const { city, date, icon, iconDescription, tempF, windSpeed, humidity } = currentWeather;
 
-  if (todayContainer) {
-    todayContainer.innerHTML = '';
-    todayContainer.append(heading, tempEl, windEl, humidityEl);
+    // Log the destructured variables
+    console.log("Destructured Values:", { city, date, icon, iconDescription, tempF, windSpeed, humidity });
+
+    heading.textContent = `${city} (${date})`;
+    weatherIcon.setAttribute(
+      'src',
+      `https://openweathermap.org/img/w/${icon}.png`
+    );
+    weatherIcon.setAttribute('alt', iconDescription);
+    weatherIcon.setAttribute('class', 'weather-img');
+    heading.append(weatherIcon);
+    tempEl.textContent = `Temp: ${tempF}°F`;
+    windEl.textContent = `Wind: ${windSpeed} MPH`;
+    humidityEl.textContent = `Humidity: ${humidity} %`;
+
+    if (todayContainer) {
+      todayContainer.innerHTML = '';
+      todayContainer.append(heading, tempEl, windEl, humidityEl);
+    }
+  } else {
+    console.error("currentWeather is undefined or has an unexpected structure");
   }
 };
 
 const renderForecast = (forecast: any): void => {
+  console.log("Forecast Data:", forecast); // Log the entire forecast array
+
   const headingCol = document.createElement('div');
   const heading = document.createElement('h4');
 
@@ -113,6 +128,7 @@ const renderForecast = (forecast: any): void => {
   }
 
   for (let i = 0; i < forecast.length; i++) {
+    console.log("Forecast Item:", forecast[i]); // Log each forecast item
     renderForecastCard(forecast[i]);
   }
 };

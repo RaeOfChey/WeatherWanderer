@@ -10,8 +10,11 @@ interface Coordinates {
 // Define a class for the Weather object
 class Weather {
   constructor(
-    public temperature: number,
-    public description: string,
+    public city: string,
+    public tempF: number,
+    public date: number,
+    public icon: string,
+    public iconDescription: string,
     public humidity: number,
     public windSpeed: number
   ) {}
@@ -30,16 +33,16 @@ class WeatherService {
   // Create fetchLocationData method
   private async fetchLocationData(query: string) {
     try {
-      const response = await fetch(this.buildGeocodeQuery(query));
-      if (!response.ok) {
-        throw new Error(`HTTP error! Status: ${response.status}`);
-      }
-      return await response.json();
+        const response = await fetch(this.buildGeocodeQuery(query));
+        if (!response.ok) {
+            throw new Error(`HTTP error! Status: ${response.status}`);
+        }
+        return await response.json();
     } catch (error) {
-      console.error('Error fetching location data:', error);
-      throw error; // Rethrow or handle it as needed
+        console.error('Error fetching location data:', error);
+        throw error; // Rethrow or handle it as needed
     }
-  }
+}
 
   // Create destructureLocationData method
   private destructureLocationData(locationData: any): Coordinates {
@@ -56,31 +59,36 @@ class WeatherService {
 
   // Create fetchAndDestructureLocationData method
   private async fetchAndDestructureLocationData() {
-    const locationData = await this.fetchLocationData(this.cityName);
-    console.log('Fetched location data:', locationData); // Log fetched location data
+    try {
+        const locationData = await this.fetchLocationData(this.cityName);
+        console.log('Fetched location data:', locationData); // Log fetched location data
 
-    // Check if locationData has any entries
-    if (!locationData || locationData.length === 0) {
-      throw new Error(`No location data found for city: ${this.cityName}`);
+        // Check if locationData has any entries
+        if (!locationData || !Array.isArray(locationData) || locationData.length === 0) {
+            throw new Error(`No location data found for city: ${this.cityName}`);
+        }
+
+        return this.destructureLocationData(locationData[0]);
+    } catch (error) {
+        console.error('Error in fetchAndDestructureLocationData:', error);
+        throw error; // Rethrow or handle it as needed
     }
-
-    return this.destructureLocationData(locationData[0]);
-  }
+}
 
   // Create fetchWeatherData method
   private async fetchWeatherData(coordinates: Coordinates) {
     try {
-      const response = await fetch(this.buildWeatherQuery(coordinates));
-      console.log('API response status:', response.status); // Log API response status
-      if (!response.ok) {
-        throw new Error(`HTTP error! Status: ${response.status}`);
-      }
-      return await response.json();
+        const response = await fetch(this.buildWeatherQuery(coordinates));
+        console.log('API response status:', response.status); // Log API response status
+        if (!response.ok) {
+            throw new Error(`HTTP error! Status: ${response.status}`);
+        }
+        return await response.json();
     } catch (error) {
-      console.error('Error fetching weather data:', error);
-      throw error; // Rethrow or handle it as needed
+        console.error('Error fetching weather data:', error);
+        throw error; // Rethrow or handle it as needed
     }
-  }
+}
 
   // Create buildWeatherQuery method
   private buildWeatherQuery(coordinates: Coordinates): string {
@@ -89,8 +97,12 @@ class WeatherService {
 
   // Create parseCurrentWeather method
   private parseCurrentWeather(response: any): Weather {
+    console.log(response)
     return new Weather(
+      response.name,
       response.main.temp,
+      response.dt,
+      response.weather[0].icon,
       response.weather[0].description,
       response.main.humidity,
       response.wind.speed
@@ -104,7 +116,7 @@ class WeatherService {
     const weatherData = await this.fetchWeatherData(coordinates);
     const currentWeather = this.parseCurrentWeather(weatherData);
 
-    return currentWeather; // Return only current weather for simplicity
+    return currentWeather;
   }
 }
 
