@@ -42,19 +42,16 @@ const fetchWeather = async (cityName: string) => {
     headers: {
       'Content-Type': 'application/json',
     },
-    body: JSON.stringify({ city: cityName }), // Change cityName to city
+    body: JSON.stringify({ cityName }),
   });
 
   const weatherData = await response.json();
 
   console.log('weatherData: ', weatherData);
 
-  if (weatherData.success) {
+ 
     renderCurrentWeather(weatherData[0]);
     renderForecast(weatherData.slice(1));
-  } else {
-    console.error('Error fetching weather:', weatherData.message);
-  }
 };
 
 const fetchSearchHistory = async () => {
@@ -83,38 +80,33 @@ Render Functions
 */
 
 const renderCurrentWeather = (currentWeather: any): void => {
-  console.log("Current Weather Data:", currentWeather); // Log the entire object
+  const { city, date, icon, iconDescription, tempF, windSpeed, humidity } =
+  currentWeather; 
+  
+  console.log('todayContainer:', todayContainer);
+  
+  // convert the following to typescript
+  heading.textContent = `${city} (${date})`;
+  weatherIcon.setAttribute(
+    'src',
+    `https://openweathermap.org/img/w/${icon}.png`
+  );
+  weatherIcon.setAttribute('alt', iconDescription);
+  weatherIcon.setAttribute('class', 'weather-img');
+  heading.append(weatherIcon);
+  
+  tempEl.textContent = `Temp: ${tempF}°F`;
+  windEl.textContent = `Wind: ${windSpeed} MPH`;
+  humidityEl.textContent = `Humidity: ${humidity} %`;
 
-  if (currentWeather) {
-    const { city, date, icon, iconDescription, tempF, windSpeed, humidity } = currentWeather;
-
-    // Log the destructured variables
-    console.log("Destructured Values:", { city, date, icon, iconDescription, tempF, windSpeed, humidity });
-
-    heading.textContent = `${city} (${date})`;
-    weatherIcon.setAttribute(
-      'src',
-      `https://openweathermap.org/img/w/${icon}.png`
-    );
-    weatherIcon.setAttribute('alt', iconDescription);
-    weatherIcon.setAttribute('class', 'weather-img');
-    heading.append(weatherIcon);
-    tempEl.textContent = `Temp: ${tempF}°F`;
-    windEl.textContent = `Wind: ${windSpeed} MPH`;
-    humidityEl.textContent = `Humidity: ${humidity} %`;
-
-    if (todayContainer) {
-      todayContainer.innerHTML = '';
-      todayContainer.append(heading, tempEl, windEl, humidityEl);
-    }
-  } else {
-    console.error("currentWeather is undefined or has an unexpected structure");
+  if (todayContainer) {
+    todayContainer.innerHTML = '';
+    todayContainer.append(heading, tempEl, windEl, humidityEl);
   }
 };
 
 const renderForecast = (forecast: any): void => {
-  console.log("Forecast Data:", forecast); // Log the entire forecast array
-
+  console.log('Rendering Forecast:', forecast);
   const headingCol = document.createElement('div');
   const heading = document.createElement('h4');
 
@@ -128,12 +120,12 @@ const renderForecast = (forecast: any): void => {
   }
 
   for (let i = 0; i < forecast.length; i++) {
-    console.log("Forecast Item:", forecast[i]); // Log each forecast item
     renderForecastCard(forecast[i]);
   }
 };
 
 const renderForecastCard = (forecast: any) => {
+  console.log('Rendering Forecast Card:', forecast);
   const { date, icon, iconDescription, tempF, windSpeed, humidity } = forecast;
 
   const { col, cardTitle, weatherIcon, tempEl, windEl, humidityEl } =
@@ -154,6 +146,7 @@ const renderForecastCard = (forecast: any) => {
     forecastContainer.append(col);
   }
 };
+
 
 const renderSearchHistory = async (searchHistory: any) => {
   const historyList = await searchHistory.json();

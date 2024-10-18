@@ -92,21 +92,44 @@ class WeatherService {
 
   // Create buildWeatherQuery method
   private buildWeatherQuery(coordinates: Coordinates): string {
-    return `${this.baseURL}/data/2.5/weather?lat=${coordinates.latitude}&lon=${coordinates.longitude}&appid=${this.apiKey}`;
+    return `${this.baseURL}/data/2.5/forecast?lat=${coordinates.latitude}&lon=${coordinates.longitude}&appid=${this.apiKey}`;
   }
 
-  // Create parseCurrentWeather method
-  private parseCurrentWeather(response: any): Weather {
-    console.log(response)
-    return new Weather(
-      response.name,
-      response.main.temp,
-      response.dt,
-      response.weather[0].icon,
-      response.weather[0].description,
-      response.main.humidity,
-      response.wind.speed
+  private parseCurrentWeather(response: any): [Weather, Weather[]] {
+    console.log('API response:', response); // Log the entire response to inspect its structure
+  
+    const current = response.list[0];
+    const currentWeather = new Weather(
+      response.city.name, // City's name from the response
+      current.main.temp, // Current temperature
+      current.dt, // Timestamp for the current weather data
+      current.weather[0].icon, // Weather icon for the current condition
+      current.weather[0].description, // Description of the current weather
+      current.main.humidity, // Humidity
+      current.wind.speed // Wind speed
     );
+  
+    let forecast: Weather[] = [];
+    
+    // Loop through the forecast entries every 8th item (24-hour intervals)
+    for (let i = 4; i < response.list.length; i += 8) {
+      const singleDay = response.list[i];
+      
+      // No 'name' property in forecast data; use city name for each forecast entry
+      const forecastDay = new Weather(
+        response.city.name, // City's name from the response
+        singleDay.main.temp, // Temperature for the forecasted day
+        singleDay.dt, // Timestamp for the forecasted day
+        singleDay.weather[0].icon, // Weather icon
+        singleDay.weather[0].description, // Weather description
+        singleDay.main.humidity, // Humidity for the forecasted day
+        singleDay.wind.speed // Wind speed for the forecasted day
+      );
+      
+      forecast.push(forecastDay);
+    }
+  
+    return [currentWeather, forecast];
   }
 
   // Complete getWeatherForCity method

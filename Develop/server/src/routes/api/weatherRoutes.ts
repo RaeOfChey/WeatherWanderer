@@ -16,7 +16,7 @@ router.post('/', async (_req, res) => {
     // Use WeatherService to get weather data
     const weatherData = await WeatherService.getWeatherForCity(cityName);
 
-    return res.status(200).json({ success: true, data: weatherData });
+    return res.status(200).json(weatherData);
   } catch (error) {
     console.error('Error in weather route:', error);
     return res.status(500).json({ success: false, message: 'Error retrieving weather data' });
