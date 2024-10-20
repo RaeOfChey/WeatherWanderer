@@ -26,7 +26,7 @@ Weather Wanderer is a dynamic weather dashboard that fetches 5-day forecasts fro
 ## Installation
 To use the application, follow these steps:
 
-1. Clone the repository: git clone https://github.com/your-username/auto-builder.git
+1. Clone the repository
 2. Navigate to the project directory: cd weather-wanderer
 3. Install the necessary dependencies: npm install
 4. Create a .env file in the root directory and add your OpenWeather API key: API_KEY=your_openweather_api_key
