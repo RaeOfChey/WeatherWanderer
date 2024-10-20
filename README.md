@@ -72,7 +72,3 @@ To run any test files in the future, use: npm test
 
 ## Questions
 If you have any questions about the repository, feel free to reach out by opening an issue or contacting me directly at cheyennaraelynn@gmail.com You can also find more of my work on GitHu at https://github.com/RaeOfChey.
-
-
-## Notes:
-// access the API key in JS code like this: const APIKey = process.env.9911d5ed9fe8ecd593c1ac1f47d3646f;
